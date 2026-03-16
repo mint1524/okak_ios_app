@@ -3,14 +3,16 @@ import SwiftUI
 
 struct RootView: View {
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: OKSpacing.m) {
             Text("OKAK")
-                .font(.system(size: 48, weight: .heavy, design: .rounded))
+                .font(OKFont.brand)
+                .foregroundStyle(OKColor.accent)
             Text("AI Mobile")
-                .font(.title3)
+                .font(OKFont.title3)
                 .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(OKColor.background.ignoresSafeArea())
     }
 }
 

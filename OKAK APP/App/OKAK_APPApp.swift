@@ -6,6 +6,8 @@ struct OKAK_APPApp: App {
     var body: some Scene {
         WindowGroup {
             RootView()
+                .tint(OKColor.accent)
+                .preferredColorScheme(nil)
         }
     }
 }
