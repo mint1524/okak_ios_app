@@ -8,7 +8,7 @@ final class PasswordResetViewModel: ObservableObject {
     @Published var errorMessage: String?
     @Published var didSend: Bool = false
 
-    private let auth: AuthServiceType
+    let auth: AuthServiceType
 
     init(auth: AuthServiceType) {
         self.auth = auth

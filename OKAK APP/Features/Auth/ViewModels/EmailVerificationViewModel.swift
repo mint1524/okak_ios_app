@@ -9,7 +9,7 @@ final class EmailVerificationViewModel: ObservableObject {
     @Published var resendCooldown: Int = 0
 
     let email: String
-    private let auth: AuthServiceType
+    let auth: AuthServiceType
     private var cooldownTask: Task<Void, Never>?
 
     init(email: String, auth: AuthServiceType) {

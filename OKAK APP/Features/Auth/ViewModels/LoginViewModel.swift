@@ -9,7 +9,7 @@ final class LoginViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
 
-    private let auth: AuthServiceType
+    let auth: AuthServiceType
 
     init(auth: AuthServiceType) {
         self.auth = auth

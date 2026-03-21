@@ -13,7 +13,7 @@ final class RegisterViewModel: ObservableObject {
     @Published var generalError: String?
     @Published var verificationCodeHint: String?
 
-    private let auth: AuthServiceType
+    let auth: AuthServiceType
 
     init(auth: AuthServiceType) {
         self.auth = auth
