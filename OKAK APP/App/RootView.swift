@@ -21,7 +21,7 @@ struct RootView: View {
                 }
                 .transition(.opacity)
             case .authenticated:
-                AuthenticatedPlaceholderView()
+                HomeTabView()
                     .environmentObject(deps)
                     .transition(.opacity)
             }
@@ -42,24 +42,4 @@ struct RootView: View {
     }
 }
 
-struct AuthenticatedPlaceholderView: View {
-    @EnvironmentObject var deps: AppDependencies
 
-    var body: some View {
-        VStack(spacing: OKSpacing.m) {
-            Text("Главный экран")
-                .font(OKFont.title)
-            Text("Скоро здесь появится AI Chat, магазин и аккаунт.")
-                .font(OKFont.footnote)
-                .foregroundStyle(OKColor.textSecondary)
-            Button("Выйти") {
-                Task { await deps.authService.logout() }
-            }
-            .buttonStyle(OKSecondaryButtonStyle())
-            .padding(.top, OKSpacing.l)
-        }
-        .padding(OKSpacing.l)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(OKColor.background.ignoresSafeArea())
-    }
-}

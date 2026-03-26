@@ -10,6 +10,7 @@ final class AppDependencies: ObservableObject {
     let api: APIClientType
     let sse: SSEClientType
     let authService: AuthServiceType
+    let chatService: ChatServiceType
 
     init(configuration: AppConfiguration = .default) {
         self.configuration = configuration
@@ -29,7 +30,9 @@ final class AppDependencies: ObservableObject {
             }
         )
         self.api = api
-        self.sse = SSEClient(api: api)
+        let sse = SSEClient(api: api)
+        self.sse = sse
         self.authService = AuthService(api: api, session: session)
+        self.chatService = ChatService(api: api, sse: sse)
     }
 }
