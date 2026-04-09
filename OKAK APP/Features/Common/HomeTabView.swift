@@ -13,11 +13,15 @@ struct HomeTabView: View {
                 .tabItem { Label("AI Chat", systemImage: "bubble.left.and.bubble.right.fill") }
                 .tag(HomeTab.chat)
 
-            StorePlaceholderView()
+            StoreView(vm: StoreViewModel(
+                catalog: deps.catalogService,
+                orders: deps.ordersService,
+                subscriptions: deps.subscriptionsService
+            ))
                 .tabItem { Label("Магазин", systemImage: "bag.fill") }
                 .tag(HomeTab.store)
 
-            SubscriptionsPlaceholderView()
+            ActiveSubscriptionsView(vm: ActiveSubscriptionsViewModel(service: deps.subscriptionsService))
                 .tabItem { Label("Подписки", systemImage: "creditcard.fill") }
                 .tag(HomeTab.subscriptions)
 
@@ -26,32 +30,6 @@ struct HomeTabView: View {
                 .tag(HomeTab.account)
         }
         .tint(OKColor.accent)
-    }
-}
-
-struct StorePlaceholderView: View {
-    var body: some View {
-        NavigationStack {
-            Text("Магазин скоро будет здесь")
-                .font(OKFont.title3)
-                .foregroundStyle(OKColor.textSecondary)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(OKColor.background.ignoresSafeArea())
-                .navigationTitle("Магазин")
-        }
-    }
-}
-
-struct SubscriptionsPlaceholderView: View {
-    var body: some View {
-        NavigationStack {
-            Text("Активные подписки")
-                .font(OKFont.title3)
-                .foregroundStyle(OKColor.textSecondary)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(OKColor.background.ignoresSafeArea())
-                .navigationTitle("Подписки")
-        }
     }
 }
 

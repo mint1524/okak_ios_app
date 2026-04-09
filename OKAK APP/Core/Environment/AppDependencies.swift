@@ -11,6 +11,9 @@ final class AppDependencies: ObservableObject {
     let sse: SSEClientType
     let authService: AuthServiceType
     let chatService: ChatServiceType
+    let catalogService: CatalogServiceType
+    let ordersService: OrdersServiceType
+    let subscriptionsService: SubscriptionsServiceType
 
     init(configuration: AppConfiguration = .default) {
         self.configuration = configuration
@@ -34,5 +37,8 @@ final class AppDependencies: ObservableObject {
         self.sse = sse
         self.authService = AuthService(api: api, session: session)
         self.chatService = ChatService(api: api, sse: sse)
+        self.catalogService = CatalogService(api: api)
+        self.ordersService = OrdersService(api: api)
+        self.subscriptionsService = SubscriptionsService(api: api)
     }
 }
