@@ -4,6 +4,7 @@ import SwiftUI
 struct StoreView: View {
     @StateObject var vm: StoreViewModel
     @State private var presented: SubscriptionDTO?
+    @EnvironmentObject var deps: AppDependencies
 
     var body: some View {
         NavigationStack {
@@ -26,6 +27,7 @@ struct StoreView: View {
         } else {
             ScrollView {
                 VStack(alignment: .leading, spacing: OKSpacing.l) {
+                    RecommendationsView(vm: RecommendationsViewModel(service: deps.recommendationsService))
                     filterStrip
                     LazyVStack(spacing: OKSpacing.m) {
                         ForEach(vm.filteredItems) { sub in

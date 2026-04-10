@@ -14,6 +14,7 @@ final class AppDependencies: ObservableObject {
     let catalogService: CatalogServiceType
     let ordersService: OrdersServiceType
     let subscriptionsService: SubscriptionsServiceType
+    let recommendationsService: RecommendationsServiceType
 
     init(configuration: AppConfiguration = .default) {
         self.configuration = configuration
@@ -40,5 +41,6 @@ final class AppDependencies: ObservableObject {
         self.catalogService = CatalogService(api: api)
         self.ordersService = OrdersService(api: api)
         self.subscriptionsService = SubscriptionsService(api: api)
+        self.recommendationsService = RecommendationsService(api: api)
     }
 }
