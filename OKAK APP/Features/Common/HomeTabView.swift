@@ -25,7 +25,7 @@ struct HomeTabView: View {
                 .tabItem { Label("Подписки", systemImage: "creditcard.fill") }
                 .tag(HomeTab.subscriptions)
 
-            AccountPlaceholderView()
+            AccountView()
                 .tabItem { Label("Аккаунт", systemImage: "person.crop.circle.fill") }
                 .tag(HomeTab.account)
         }
@@ -33,21 +33,4 @@ struct HomeTabView: View {
     }
 }
 
-struct AccountPlaceholderView: View {
-    @EnvironmentObject var deps: AppDependencies
-    var body: some View {
-        NavigationStack {
-            VStack(spacing: OKSpacing.m) {
-                Text("Аккаунт").font(OKFont.title)
-                Button("Выйти") {
-                    Task { await deps.authService.logout() }
-                }
-                .buttonStyle(OKSecondaryButtonStyle())
-                .frame(maxWidth: 240)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(OKColor.background.ignoresSafeArea())
-            .navigationTitle("Аккаунт")
-        }
-    }
-}
+

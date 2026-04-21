@@ -15,6 +15,9 @@ final class AppDependencies: ObservableObject {
     let ordersService: OrdersServiceType
     let subscriptionsService: SubscriptionsServiceType
     let recommendationsService: RecommendationsServiceType
+    let profileService: ProfileServiceType
+    let settingsService: SettingsServiceType
+    let sessionsService: SessionsServiceType
 
     init(configuration: AppConfiguration = .default) {
         self.configuration = configuration
@@ -42,5 +45,8 @@ final class AppDependencies: ObservableObject {
         self.ordersService = OrdersService(api: api)
         self.subscriptionsService = SubscriptionsService(api: api)
         self.recommendationsService = RecommendationsService(api: api)
+        self.profileService = ProfileService(api: api)
+        self.settingsService = SettingsService(api: api)
+        self.sessionsService = SessionsService(api: api)
     }
 }
