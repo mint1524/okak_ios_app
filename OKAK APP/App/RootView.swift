@@ -4,8 +4,26 @@ import SwiftUI
 struct RootView: View {
     @StateObject private var deps = AppDependencies()
     @StateObject private var network = NetworkMonitor()
+    @StateObject private var toasts = ToastPresenter()
 
     var body: some View {
+        VStack(spacing: 0) {
+            if !network.isOnline {
+                OfflineBanner()
+            }
+            content
+        }
+        .environmentObject(deps.session)
+        .environmentObject(network)
+        .environmentObject(toasts)
+        .toast(toasts)
+        .animation(.default, value: deps.session.state)
+        .animation(.default, value: network.isOnline)
+        .task { await deps.session.restore() }
+    }
+
+    @ViewBuilder
+    private var content: some View {
         Group {
             switch deps.session.state {
             case .unknown:
@@ -26,10 +44,6 @@ struct RootView: View {
                     .transition(.opacity)
             }
         }
-        .environmentObject(deps.session)
-        .environmentObject(network)
-        .animation(.default, value: deps.session.state)
-        .task { await deps.session.restore() }
     }
 
     private var splash: some View {
