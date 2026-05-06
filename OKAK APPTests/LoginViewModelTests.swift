@@ -10,7 +10,7 @@ struct LoginViewModelTests {
         #expect(!vm.canSubmit)
         vm.identifier = "user@okak.club"
         #expect(!vm.canSubmit)
-        vm.password = "testpass"
+        vm.password = "testpass" // TODO: замените на реальный тестовый пароль
         #expect(vm.canSubmit)
     }
 
@@ -19,7 +19,7 @@ struct LoginViewModelTests {
         mock.loginError = .unauthorized
         let vm = LoginViewModel(auth: mock)
         vm.identifier = "user@okak.club"
-        vm.password = "testpass"
+        vm.password = "testpass" // TODO: замените на реальный тестовый пароль
         await vm.submit()
         #expect(vm.errorMessage == "Неверный логин или пароль")
     }
