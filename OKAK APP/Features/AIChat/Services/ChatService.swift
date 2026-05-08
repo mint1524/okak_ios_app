@@ -1,5 +1,6 @@
 
 import Foundation
+import os
 
 protocol ChatServiceType: AnyObject, Sendable {
     func listChats() async throws -> [ChatDTO]

@@ -1,5 +1,6 @@
 
 import SwiftUI
+import Combine
 
 struct RecommendationsView: View {
     @StateObject var vm: RecommendationsViewModel

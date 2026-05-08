@@ -35,7 +35,7 @@ struct CreateOrderRequest: Encodable {
     enum CodingKeys: String, CodingKey { case subscriptionId = "subscription_id" }
 }
 
-struct CreateOrderResponse: Decodable {
+struct CreateOrderResponse: Decodable, Equatable {
     let order: OrderDTO
     let payment: MockPaymentDTO
 }

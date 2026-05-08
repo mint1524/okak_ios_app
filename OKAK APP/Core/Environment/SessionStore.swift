@@ -1,6 +1,7 @@
 
 import Foundation
 import Combine
+import os
 
 @MainActor
 final class SessionStore: ObservableObject {
