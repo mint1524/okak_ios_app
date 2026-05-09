@@ -1,7 +1,7 @@
 
 import Foundation
 
-struct ProfileDTO: Decodable, Hashable {
+struct ProfileDTO: Decodable, Hashable, Sendable {
     let id: String
     let userId: String
     let displayName: String?

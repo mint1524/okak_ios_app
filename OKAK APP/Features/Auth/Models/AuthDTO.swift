@@ -1,7 +1,7 @@
 
 import Foundation
 
-struct AuthTokens: Decodable, Equatable {
+struct AuthTokens: Decodable, Equatable, Sendable {
     let accessToken: String
     let refreshToken: String
 
@@ -11,7 +11,7 @@ struct AuthTokens: Decodable, Equatable {
     }
 }
 
-struct AuthUserDTO: Decodable, Equatable, Identifiable {
+struct AuthUserDTO: Decodable, Equatable, Identifiable, Sendable {
     let id: String
     let email: String
     let username: String?
@@ -31,7 +31,7 @@ struct AuthUserDTO: Decodable, Equatable, Identifiable {
     }
 }
 
-struct AuthResponse: Decodable {
+struct AuthResponse: Decodable, Sendable {
     let user: AuthUserDTO
     let tokens: AuthTokens
 }
@@ -69,7 +69,7 @@ struct PasswordResetConfirm: Encodable {
     let password: String
 }
 
-struct RegisterResponse: Decodable {
+struct RegisterResponse: Decodable, Sendable {
     let userId: String
     let email: String
     let verificationCodeDev: String?
@@ -81,6 +81,6 @@ struct RegisterResponse: Decodable {
     }
 }
 
-struct OKMessage: Decodable {
+struct OKMessage: Decodable, Sendable {
     let message: String
 }

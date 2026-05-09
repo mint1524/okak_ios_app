@@ -1,7 +1,7 @@
 
 import Foundation
 
-struct SessionDTO: Identifiable, Decodable, Hashable {
+struct SessionDTO: Identifiable, Decodable, Hashable, Sendable {
     let id: String
     let deviceName: String
     let deviceType: String
@@ -25,6 +25,6 @@ struct SessionDTO: Identifiable, Decodable, Hashable {
     }
 }
 
-struct SessionsListResponse: Decodable {
+struct SessionsListResponse: Decodable, Sendable {
     let items: [SessionDTO]
 }

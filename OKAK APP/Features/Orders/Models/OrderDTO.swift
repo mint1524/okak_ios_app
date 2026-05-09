@@ -1,7 +1,7 @@
 
 import Foundation
 
-struct OrderDTO: Identifiable, Decodable, Hashable {
+struct OrderDTO: Identifiable, Decodable, Hashable, Sendable {
     let id: String
     let subscriptionId: String
     let subscriptionName: String
@@ -25,7 +25,7 @@ struct OrderDTO: Identifiable, Decodable, Hashable {
     }
 }
 
-struct OrdersListResponse: Decodable {
+struct OrdersListResponse: Decodable, Sendable {
     let items: [OrderDTO]
 }
 
@@ -35,12 +35,12 @@ struct CreateOrderRequest: Encodable {
     enum CodingKeys: String, CodingKey { case subscriptionId = "subscription_id" }
 }
 
-struct CreateOrderResponse: Decodable, Equatable {
+struct CreateOrderResponse: Decodable, Equatable, Sendable {
     let order: OrderDTO
     let payment: MockPaymentDTO
 }
 
-struct MockPaymentDTO: Decodable, Hashable {
+struct MockPaymentDTO: Decodable, Hashable, Sendable {
     let id: String
     let providerPaymentId: String
     let amount: Decimal

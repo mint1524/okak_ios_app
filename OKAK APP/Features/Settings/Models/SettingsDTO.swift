@@ -1,7 +1,7 @@
 
 import Foundation
 
-struct AppSettingsDTO: Decodable, Hashable {
+struct AppSettingsDTO: Decodable, Hashable, Sendable {
     let language: String
     let theme: String
     let notificationsEnabled: Bool

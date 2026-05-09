@@ -1,7 +1,7 @@
 
 import Foundation
 
-protocol APIClientType: AnyObject, Sendable {
+@preconcurrency protocol APIClientType: AnyObject, Sendable {
     func send<T: Decodable>(_ endpoint: APIEndpoint, as type: T.Type) async throws -> T
     func sendVoid(_ endpoint: APIEndpoint) async throws
     func rawData(_ endpoint: APIEndpoint) async throws -> Data

@@ -5,7 +5,7 @@ struct AppConfiguration: Sendable {
     let apiBaseURL: URL
     let environmentName: String
 
-    static let `default`: AppConfiguration = {
+    nonisolated(unsafe) static let `default`: AppConfiguration = {
         #if targetEnvironment(simulator)
         let host = "http://127.0.0.1:3000"
         #else

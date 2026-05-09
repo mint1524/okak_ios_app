@@ -1,7 +1,7 @@
 
 import Foundation
 
-struct SubscriptionDTO: Identifiable, Decodable, Hashable {
+struct SubscriptionDTO: Identifiable, Decodable, Hashable, Sendable {
     let id: String
     let name: String
     let description: String
@@ -27,11 +27,11 @@ struct SubscriptionDTO: Identifiable, Decodable, Hashable {
     }
 }
 
-struct SubscriptionsListResponse: Decodable {
+struct SubscriptionsListResponse: Decodable, Sendable {
     let items: [SubscriptionDTO]
 }
 
-struct UserSubscriptionDTO: Identifiable, Decodable, Hashable {
+struct UserSubscriptionDTO: Identifiable, Decodable, Hashable, Sendable {
     let id: String
     let subscriptionId: String
     let name: String
@@ -53,6 +53,6 @@ struct UserSubscriptionDTO: Identifiable, Decodable, Hashable {
     }
 }
 
-struct UserSubscriptionsResponse: Decodable {
+struct UserSubscriptionsResponse: Decodable, Sendable {
     let items: [UserSubscriptionDTO]
 }

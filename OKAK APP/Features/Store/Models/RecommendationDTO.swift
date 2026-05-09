@@ -1,7 +1,7 @@
 
 import Foundation
 
-struct RecommendationDTO: Decodable, Identifiable, Hashable {
+struct RecommendationDTO: Decodable, Identifiable, Hashable, Sendable {
     let id: String
     let subscriptionId: String
     let title: String
@@ -17,11 +17,11 @@ struct RecommendationDTO: Decodable, Identifiable, Hashable {
     }
 }
 
-struct RecommendationsResponse: Decodable {
+struct RecommendationsResponse: Decodable, Sendable {
     let items: [RecommendationDTO]
 }
 
-struct OptimalSubscriptionResponse: Decodable {
+struct OptimalSubscriptionResponse: Decodable, Sendable {
     let subscription: SubscriptionDTO
     let explanation: String
 }

@@ -1,7 +1,7 @@
 
 import Foundation
 
-struct ChatDTO: Identifiable, Decodable, Hashable {
+struct ChatDTO: Identifiable, Decodable, Hashable, Sendable {
     let id: String
     let title: String
     let model: String
@@ -23,24 +23,24 @@ struct ChatDTO: Identifiable, Decodable, Hashable {
     }
 }
 
-struct ChatListResponse: Decodable {
+struct ChatListResponse: Decodable, Sendable {
     let items: [ChatDTO]
 }
 
-enum MessageRole: String, Decodable, Encodable {
+enum MessageRole: String, Decodable, Encodable, Sendable {
     case user
     case assistant
     case system
 }
 
-enum MessageStatus: String, Decodable {
+enum MessageStatus: String, Decodable, Sendable {
     case pending
     case streaming
     case completed
     case failed
 }
 
-struct MessageAttachment: Codable, Hashable, Identifiable {
+struct MessageAttachment: Codable, Hashable, Identifiable, Sendable {
     let id: String
     let name: String
     let mimeType: String
@@ -54,7 +54,7 @@ struct MessageAttachment: Codable, Hashable, Identifiable {
     }
 }
 
-struct MessageDTO: Identifiable, Decodable, Hashable {
+struct MessageDTO: Identifiable, Decodable, Hashable, Sendable {
     let id: String
     let chatId: String
     let role: MessageRole
@@ -76,7 +76,7 @@ struct MessageDTO: Identifiable, Decodable, Hashable {
     }
 }
 
-struct MessageListResponse: Decodable {
+struct MessageListResponse: Decodable, Sendable {
     let items: [MessageDTO]
 }
 
@@ -121,7 +121,7 @@ struct SendMessageRequest: Encodable {
     let attachments: [String]?
 }
 
-struct SendMessageResponse: Decodable {
+struct SendMessageResponse: Decodable, Sendable {
     let userMessage: MessageDTO
     let assistantMessage: MessageDTO
 
@@ -131,7 +131,7 @@ struct SendMessageResponse: Decodable {
     }
 }
 
-struct QuotaDTO: Decodable, Equatable {
+struct QuotaDTO: Decodable, Equatable, Sendable {
     let planName: String
     let limit: Int
     let used: Int
@@ -147,7 +147,7 @@ struct QuotaDTO: Decodable, Equatable {
     }
 }
 
-enum ChatStreamEvent: Decodable {
+enum ChatStreamEvent: Decodable, Sendable {
     case start(messageId: String)
     case delta(String)
     case toolUse(String)
