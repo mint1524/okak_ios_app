@@ -8,15 +8,6 @@ struct ProfileView: View {
         Form {
             Section("Профиль") {
                 TextField("Имя", text: $vm.displayName)
-                Picker("Язык", selection: $vm.language) {
-                    Text("Русский").tag("ru")
-                    Text("English").tag("en")
-                }
-                Picker("Тема", selection: $vm.theme) {
-                    Text("Системная").tag("system")
-                    Text("Светлая").tag("light")
-                    Text("Тёмная").tag("dark")
-                }
             }
             Section("AI") {
                 Toggle("Персонализация AI", isOn: $vm.aiPersonalization)

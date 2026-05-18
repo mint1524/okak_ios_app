@@ -25,6 +25,9 @@ struct ChatListView: View {
                 .navigationDestination(item: $pushChat) { chat in
                     ChatDetailView(vm: ChatDetailViewModel(chat: chat, service: vm.service))
                 }
+                .navigationDestination(for: ChatDTO.self) { chat in
+                    ChatDetailView(vm: ChatDetailViewModel(chat: chat, service: vm.service))
+                }
         }
     }
 
