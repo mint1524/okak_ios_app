@@ -39,7 +39,7 @@ final class MockAuthService: AuthServiceType, @unchecked Sendable {
         return AuthUserDTO(id: "u1", email: identifier, username: nil, name: nil, emailVerified: true, subscriptionStatus: nil, role: nil)
     }
     func requestPasswordReset(email: String) async throws {}
-    func confirmPasswordReset(token: String, newPassword: String) async throws {}
+    func confirmPasswordReset(email: String, code: String, newPassword: String) async throws {}
     func me() async throws -> AuthUserDTO {
         AuthUserDTO(id: "u1", email: "demo@okak.app", username: nil, name: nil, emailVerified: true, subscriptionStatus: nil, role: nil)
     }

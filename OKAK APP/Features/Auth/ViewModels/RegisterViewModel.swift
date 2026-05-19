@@ -44,9 +44,16 @@ final class RegisterViewModel: ObservableObject {
             let resp = try await auth.register(email: email.lowercased(), password: password, dateOfBirth: dateOfBirth)
             verificationCodeHint = resp.verificationCodeDev
         } catch let api as APIError {
-            if case .validation(let m) = api {
-                generalError = m
-            } else {
+            switch api {
+            case .validation(let m):
+                if m.contains("уже зарегистрирован") || m.contains("already registered") || m.contains("уже существует") {
+                    generalError = "Аккаунт с таким email уже зарегистрирован. Подтвердите email или сбросьте пароль."
+                } else {
+                    generalError = m
+                }
+            case .server(let code, _) where code == 500:
+                generalError = "Возможно, аккаунт уже создан. Попробуйте подтвердить email или войти."
+            default:
                 generalError = api.errorDescription
             }
         } catch {

@@ -8,7 +8,7 @@ struct MessageBubbleView: View {
         HStack {
             if message.role == .user { Spacer(minLength: OKSpacing.xxl) }
             VStack(alignment: message.role == .user ? .trailing : .leading, spacing: OKSpacing.xs) {
-                Text(message.content + cursor)
+                Text(message.content)
                     .font(OKFont.body)
                     .foregroundStyle(textColor)
                     .padding(.horizontal, OKSpacing.l)
@@ -17,6 +17,17 @@ struct MessageBubbleView: View {
                         RoundedRectangle(cornerRadius: OKRadius.l, style: .continuous)
                             .fill(background)
                     )
+                if message.status == .streaming {
+                    HStack(spacing: OKSpacing.xs) {
+                        ProgressView()
+                            .controlSize(.small)
+                            .tint(OKColor.textSecondary)
+                        Text("OKAK печатает...")
+                            .font(OKFont.caption)
+                            .foregroundStyle(OKColor.textSecondary)
+                    }
+                    .padding(.leading, OKSpacing.l)
+                }
                 if !message.attachments.isEmpty {
                     HStack(spacing: OKSpacing.xs) {
                         ForEach(message.attachments) { att in
@@ -38,7 +49,7 @@ struct MessageBubbleView: View {
     }
 
     private var cursor: String {
-        message.status == .streaming ? " ▍" : ""
+        "" 
     }
 
     private var background: Color {

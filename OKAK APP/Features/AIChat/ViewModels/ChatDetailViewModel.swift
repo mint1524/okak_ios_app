@@ -96,21 +96,24 @@ final class ChatDetailViewModel: ObservableObject {
         let attachments = pendingAttachments
         pendingAttachments.removeAll()
 
+        var accumulatedContent = ""
         let stream = service.streamMessage(chatId: chat.id, content: content, attachments: attachments)
         do {
             for try await event in stream {
                 switch event {
                 case .start: break
                 case .delta(let chunk):
+                    accumulatedContent += chunk
                     updateLastAssistant { $0.content += chunk }
                 case .toolUse: break
                 case .done(let final):
+                    let resolvedContent = final.content.isEmpty ? accumulatedContent : final.content
                     updateLastAssistant {
                         $0 = MessageDTO(
                             id: final.id,
                             chatId: final.chatId,
                             role: final.role,
-                            content: final.content,
+                            content: resolvedContent,
                             status: .completed,
                             tokenCount: final.tokenCount,
                             attachments: final.attachments,
@@ -121,15 +124,24 @@ final class ChatDetailViewModel: ObservableObject {
                     quota = q
                 case .error(let m):
                     errorMessage = m
-                    updateLastAssistant { $0.status = .failed }
+                    updateLastAssistant {
+                        $0.content = accumulatedContent
+                        $0.status = .failed
+                    }
                 }
             }
         } catch let api as APIError {
             handleStreamError(api)
-            updateLastAssistant { $0.status = .failed }
+            updateLastAssistant {
+                $0.content = accumulatedContent
+                $0.status = .failed
+            }
         } catch {
             errorMessage = error.localizedDescription
-            updateLastAssistant { $0.status = .failed }
+            updateLastAssistant {
+                $0.content = accumulatedContent
+                $0.status = .failed
+            }
         }
     }
 

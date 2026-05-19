@@ -31,7 +31,7 @@ final class LoginViewModel: ObservableObject {
                                      password: password)
         } catch let api as APIError {
             switch api {
-            case .unauthorized, .validation:
+            case .unauthorized, .forbidden, .validation:
                 errorMessage = "Неверный логин или пароль"
             default:
                 errorMessage = api.errorDescription

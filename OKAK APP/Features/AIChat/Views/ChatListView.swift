@@ -3,28 +3,26 @@ import SwiftUI
 
 struct ChatListView: View {
     @StateObject var vm: ChatListViewModel
-    @State private var pushChat: ChatDTO?
+    @State private var path: [ChatDTO] = []
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             content
                 .navigationTitle("AI Chat")
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
                         Button {
                             Task {
-                                if let chat = await vm.createChat() { pushChat = chat }
+                                if let chat = await vm.createChat() { path.append(chat) }
                             }
                         } label: {
                             Image(systemName: "square.and.pencil")
                         }
+                        .accessibilityIdentifier("newChatButton")
                     }
                 }
                 .refreshable { await vm.refresh() }
                 .task { await vm.refresh() }
-                .navigationDestination(item: $pushChat) { chat in
-                    ChatDetailView(vm: ChatDetailViewModel(chat: chat, service: vm.service))
-                }
                 .navigationDestination(for: ChatDTO.self) { chat in
                     ChatDetailView(vm: ChatDetailViewModel(chat: chat, service: vm.service))
                 }
@@ -48,11 +46,12 @@ struct ChatListView: View {
                     .multilineTextAlignment(.center)
                 Button {
                     Task {
-                        if let chat = await vm.createChat() { pushChat = chat }
+                        if let chat = await vm.createChat() { path.append(chat) }
                     }
                 } label: { Text("Новый чат") }
                 .buttonStyle(OKPrimaryButtonStyle())
                 .frame(maxWidth: 240)
+                .accessibilityIdentifier("newChatEmptyButton")
             }
             .padding(OKSpacing.l)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
