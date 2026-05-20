@@ -99,7 +99,8 @@ final class APIClient: APIClientType, @unchecked Sendable {
             Task { await onUnauthorized() }
             throw APIError.unauthorized
         case 403:
-            throw APIError.forbidden
+            let body = try? decoder.decode(APIErrorBody.self, from: data)
+            throw APIError.forbidden(body?.message)
         case 404:
             throw APIError.notFound
         case 409:

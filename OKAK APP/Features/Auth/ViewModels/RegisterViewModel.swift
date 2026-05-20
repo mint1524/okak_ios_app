@@ -13,6 +13,7 @@ final class RegisterViewModel: ObservableObject {
     @Published var passwordError: String?
     @Published var generalError: String?
     @Published var verificationCodeHint: String?
+    @Published var shouldOpenVerification: Bool = false
 
     let auth: AuthServiceType
 
@@ -36,6 +37,7 @@ final class RegisterViewModel: ObservableObject {
     func submit() async {
         generalError = nil
         verificationCodeHint = nil
+        shouldOpenVerification = false
         validate()
         guard canSubmit else { return }
         isLoading = true
@@ -43,16 +45,21 @@ final class RegisterViewModel: ObservableObject {
         do {
             let resp = try await auth.register(email: email.lowercased(), password: password, dateOfBirth: dateOfBirth)
             verificationCodeHint = resp.verificationCodeDev
+            shouldOpenVerification = true
         } catch let api as APIError {
             switch api {
             case .validation(let m):
                 if m.contains("уже зарегистрирован") || m.contains("already registered") || m.contains("уже существует") {
                     generalError = "Аккаунт с таким email уже зарегистрирован. Подтвердите email или сбросьте пароль."
+                    await auth.markPendingVerification(email: email.lowercased())
+                    shouldOpenVerification = true
                 } else {
                     generalError = m
                 }
             case .server(let code, _) where code == 500:
                 generalError = "Возможно, аккаунт уже создан. Попробуйте подтвердить email или войти."
+                await auth.markPendingVerification(email: email.lowercased())
+                shouldOpenVerification = true
             default:
                 generalError = api.errorDescription
             }

@@ -8,6 +8,7 @@ final class LoginViewModel: ObservableObject {
     @Published var password: String = ""
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
+    @Published var pendingVerificationEmail: String?
 
     let auth: AuthServiceType
 
@@ -23,6 +24,7 @@ final class LoginViewModel: ObservableObject {
 
     func submit() async {
         errorMessage = nil
+        pendingVerificationEmail = nil
         guard canSubmit else { return }
         isLoading = true
         defer { isLoading = false }
@@ -31,7 +33,16 @@ final class LoginViewModel: ObservableObject {
                                      password: password)
         } catch let api as APIError {
             switch api {
-            case .unauthorized, .forbidden, .validation:
+            case .forbidden(_) where api.requiresEmailVerification:
+                let email = identifier.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+                if AuthValidation.isValidEmail(email) {
+                    pendingVerificationEmail = email
+                    await auth.markPendingVerification(email: email)
+                }
+                errorMessage = "Email не подтверждён. Завершите верификацию, чтобы войти."
+            case .unauthorized, .validation:
+                errorMessage = "Неверный логин или пароль"
+            case .forbidden(_):
                 errorMessage = "Неверный логин или пароль"
             default:
                 errorMessage = api.errorDescription

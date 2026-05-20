@@ -38,7 +38,7 @@ struct RegisterView: View {
                 Button {
                     Task {
                         await vm.submit()
-                        if vm.generalError == nil {
+                        if vm.shouldOpenVerification {
                             pushVerify = true
                         }
                     }

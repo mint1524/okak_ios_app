@@ -5,6 +5,7 @@ struct LoginView: View {
     @StateObject var vm: LoginViewModel
     @State private var showRegister = false
     @State private var showReset = false
+    @State private var showVerification = false
 
     var body: some View {
         NavigationStack {
@@ -18,6 +19,10 @@ struct LoginView: View {
                             .font(OKFont.footnote)
                             .foregroundStyle(OKColor.danger)
                             .multilineTextAlignment(.center)
+                    }
+                    if vm.pendingVerificationEmail != nil {
+                        Button("Подтвердить email") { showVerification = true }
+                            .buttonStyle(OKSecondaryButtonStyle())
                     }
                     Button("Сброс пароля") { showReset = true }
                         .buttonStyle(.plain)
@@ -41,6 +46,16 @@ struct LoginView: View {
             }
             .navigationDestination(isPresented: $showReset) {
                 PasswordResetView(vm: PasswordResetViewModel(auth: vm.auth))
+            }
+            .navigationDestination(isPresented: $showVerification) {
+                if let email = vm.pendingVerificationEmail {
+                    EmailVerificationView(
+                        vm: EmailVerificationViewModel(email: email, auth: vm.auth)
+                    )
+                }
+            }
+            .onChange(of: vm.pendingVerificationEmail) { _, email in
+                showVerification = email != nil
             }
         }
     }
@@ -79,5 +94,4 @@ struct LoginView: View {
         .disabled(!vm.canSubmit)
     }
 }
-
 

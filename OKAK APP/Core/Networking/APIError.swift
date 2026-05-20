@@ -12,7 +12,7 @@ enum APIError: Error, LocalizedError, Equatable {
     case transport(String)
     case decoding(String)
     case unauthorized
-    case forbidden
+    case forbidden(String?)
     case notFound
     case quotaExceeded
     case validation(String)
@@ -28,7 +28,7 @@ enum APIError: Error, LocalizedError, Equatable {
         case .transport(let m): return "Ошибка сети: \(m)"
         case .decoding(let m): return "Ошибка обработки ответа: \(m)"
         case .unauthorized: return "Сессия истекла. Войдите снова."
-        case .forbidden: return "Доступ запрещён."
+        case .forbidden(let message): return message ?? "Доступ запрещён."
         case .notFound: return "Объект не найден."
         case .quotaExceeded: return "Квота AI-запросов исчерпана."
         case .validation(let m): return m
@@ -38,5 +38,13 @@ enum APIError: Error, LocalizedError, Equatable {
         case .llmUnavailable: return "AI-сервис временно недоступен."
         case .unknown(let m): return m
         }
+    }
+
+    var requiresEmailVerification: Bool {
+        if case .forbidden(let message) = self {
+            return message?.localizedCaseInsensitiveContains("email не подтвержд") == true ||
+            message?.localizedCaseInsensitiveContains("почт") == true && message?.localizedCaseInsensitiveContains("подтвержд") == true
+        }
+        return false
     }
 }

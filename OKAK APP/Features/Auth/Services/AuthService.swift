@@ -7,6 +7,7 @@ protocol AuthServiceType: AnyObject, Sendable {
     func login(identifier: String, password: String) async throws -> AuthUserDTO
     func requestPasswordReset(email: String) async throws
     func confirmPasswordReset(email: String, code: String, newPassword: String) async throws
+    func markPendingVerification(email: String) async
     func me() async throws -> AuthUserDTO
     func logout() async
     func resendVerification(email: String) async throws
@@ -80,6 +81,10 @@ final class AuthService: AuthServiceType, @unchecked Sendable {
         endpoint.body = try APIEndpoint.jsonBody(PasswordResetConfirm(email: email, code: code, password: newPassword))
         endpoint.requiresAuth = false
         try await api.sendVoid(endpoint)
+    }
+
+    func markPendingVerification(email: String) async {
+        await MainActor.run { try? session.markPendingVerification(email: email.lowercased()) }
     }
 
     func me() async throws -> AuthUserDTO {
