@@ -65,7 +65,8 @@ struct PasswordResetRequest: Encodable {
 }
 
 struct PasswordResetConfirm: Encodable {
-    let token: String
+    let email: String
+    let code: String
     let password: String
 }
 

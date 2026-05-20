@@ -6,7 +6,7 @@ protocol AuthServiceType: AnyObject, Sendable {
     func verifyEmail(email: String, code: String) async throws -> AuthUserDTO
     func login(identifier: String, password: String) async throws -> AuthUserDTO
     func requestPasswordReset(email: String) async throws
-    func confirmPasswordReset(token: String, newPassword: String) async throws
+    func confirmPasswordReset(email: String, code: String, newPassword: String) async throws
     func me() async throws -> AuthUserDTO
     func logout() async
     func resendVerification(email: String) async throws
@@ -75,9 +75,9 @@ final class AuthService: AuthServiceType, @unchecked Sendable {
         try await api.sendVoid(endpoint)
     }
 
-    func confirmPasswordReset(token: String, newPassword: String) async throws {
+    func confirmPasswordReset(email: String, code: String, newPassword: String) async throws {
         var endpoint = APIEndpoint(method: .post, path: "auth/password-reset/confirm")
-        endpoint.body = try APIEndpoint.jsonBody(PasswordResetConfirm(token: token, password: newPassword))
+        endpoint.body = try APIEndpoint.jsonBody(PasswordResetConfirm(email: email, code: code, password: newPassword))
         endpoint.requiresAuth = false
         try await api.sendVoid(endpoint)
     }

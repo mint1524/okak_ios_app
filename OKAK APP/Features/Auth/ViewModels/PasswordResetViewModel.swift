@@ -4,10 +4,16 @@ import Combine
 
 @MainActor
 final class PasswordResetViewModel: ObservableObject {
+    enum Step { case requestEmail, enterCode, done }
+
+    @Published var step: Step = .requestEmail
     @Published var email: String = ""
+    @Published var code: String = ""
+    @Published var newPassword: String = ""
+    @Published var confirmPassword: String = ""
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
-    @Published var didSend: Bool = false
+    @Published var infoMessage: String?
 
     let auth: AuthServiceType
 
@@ -15,19 +21,62 @@ final class PasswordResetViewModel: ObservableObject {
         self.auth = auth
     }
 
-    var canSubmit: Bool {
+    var canRequestEmail: Bool {
         AuthValidation.isValidEmail(email) && !isLoading
     }
 
-    func submit() async {
+    var canConfirm: Bool {
+        code.count == 6 && code.allSatisfy(\.isNumber)
+            && AuthValidation.isValidPassword(newPassword)
+            && newPassword == confirmPassword
+            && !isLoading
+    }
+
+    func requestCode() async {
         errorMessage = nil
-        didSend = false
-        guard canSubmit else { return }
+        infoMessage = nil
+        guard canRequestEmail else { return }
         isLoading = true
         defer { isLoading = false }
         do {
             try await auth.requestPasswordReset(email: email.lowercased())
-            didSend = true
+            step = .enterCode
+            infoMessage = "Если адрес зарегистрирован, на него отправлен код."
+        } catch let api as APIError {
+            errorMessage = api.errorDescription
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    func resendCode() async {
+        errorMessage = nil
+        infoMessage = nil
+        isLoading = true
+        defer { isLoading = false }
+        do {
+            try await auth.requestPasswordReset(email: email.lowercased())
+            infoMessage = "Новый код отправлен."
+        } catch let api as APIError {
+            errorMessage = api.errorDescription
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    func confirm() async {
+        errorMessage = nil
+        infoMessage = nil
+        guard canConfirm else { return }
+        isLoading = true
+        defer { isLoading = false }
+        do {
+            try await auth.confirmPasswordReset(
+                email: email.lowercased(),
+                code: code,
+                newPassword: newPassword
+            )
+            step = .done
         } catch let api as APIError {
             errorMessage = api.errorDescription
         } catch {

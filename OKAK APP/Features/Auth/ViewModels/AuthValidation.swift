@@ -18,6 +18,10 @@ enum AuthValidation {
         return nil
     }
 
+    static func isValidPassword(_ password: String) -> Bool {
+        passwordIssue(password) == nil
+    }
+
     static func isAdult(_ dateOfBirth: Date) -> Bool {
         let age = Calendar.current.dateComponents([.year], from: dateOfBirth, to: Date()).year ?? 0
         return age >= 14
