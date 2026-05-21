@@ -60,10 +60,19 @@ final class ActiveSubscriptionsViewModel: ObservableObject {
         var seen = Set<String>()
         return subscriptions.filter { sub in
             guard sub.status == "active" else { return false }
-            let key = sub.subscriptionId
+            let key = canonicalName(sub.name)
             if seen.contains(key) { return false }
             seen.insert(key)
             return true
         }
+    }
+
+    private static func canonicalName(_ name: String) -> String {
+        name
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .components(separatedBy: .whitespacesAndNewlines)
+            .filter { !$0.isEmpty }
+            .joined(separator: " ")
+            .lowercased()
     }
 }

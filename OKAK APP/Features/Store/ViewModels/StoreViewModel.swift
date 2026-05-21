@@ -46,10 +46,19 @@ final class StoreViewModel: ObservableObject {
         return subscriptions
             .filter { $0.price > 0 }
             .filter { sub in
-                let key = "\(sub.type.lowercased())|\(sub.name.lowercased())"
+                let key = "\(sub.type.lowercased())|\(canonicalName(sub.name))"
                 if seen.contains(key) { return false }
                 seen.insert(key)
                 return true
             }
+    }
+
+    private static func canonicalName(_ name: String) -> String {
+        name
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .components(separatedBy: .whitespacesAndNewlines)
+            .filter { !$0.isEmpty }
+            .joined(separator: " ")
+            .lowercased()
     }
 }
