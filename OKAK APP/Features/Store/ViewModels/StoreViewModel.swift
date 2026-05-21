@@ -32,11 +32,24 @@ final class StoreViewModel: ObservableObject {
         isLoading = true
         defer { isLoading = false }
         do {
-            items = try await catalog.list(type: nil)
+            let loaded = try await catalog.list(type: nil)
+            items = Self.purchaseOptions(from: loaded)
         } catch let api as APIError {
             errorMessage = api.errorDescription
         } catch {
             errorMessage = error.localizedDescription
         }
+    }
+
+    private static func purchaseOptions(from subscriptions: [SubscriptionDTO]) -> [SubscriptionDTO] {
+        var seen = Set<String>()
+        return subscriptions
+            .filter { $0.price > 0 }
+            .filter { sub in
+                let key = "\(sub.type.lowercased())|\(sub.name.lowercased())"
+                if seen.contains(key) { return false }
+                seen.insert(key)
+                return true
+            }
     }
 }

@@ -22,10 +22,6 @@ final class RegisterViewModel: ObservableObject {
     }
 
     var canSubmit: Bool {
-        AuthValidation.isValidEmail(email) &&
-        AuthValidation.passwordIssue(password) == nil &&
-        AuthValidation.isAdult(dateOfBirth) &&
-        acceptedTerms &&
         !isLoading
     }
 
@@ -39,7 +35,20 @@ final class RegisterViewModel: ObservableObject {
         verificationCodeHint = nil
         shouldOpenVerification = false
         validate()
-        guard canSubmit else { return }
+        guard AuthValidation.isValidEmail(email),
+              AuthValidation.passwordIssue(password) == nil else {
+            generalError = "Проверьте email и пароль"
+            return
+        }
+        guard AuthValidation.isAdult(dateOfBirth) else {
+            generalError = "Регистрация доступна пользователям от 14 лет"
+            return
+        }
+        guard acceptedTerms else {
+            generalError = "Нужно принять условия и политики OKAK"
+            return
+        }
+        guard !isLoading else { return }
         isLoading = true
         defer { isLoading = false }
         do {

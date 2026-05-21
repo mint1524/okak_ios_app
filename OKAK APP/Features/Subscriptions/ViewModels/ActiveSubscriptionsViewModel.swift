@@ -17,7 +17,7 @@ final class ActiveSubscriptionsViewModel: ObservableObject {
         isLoading = true
         defer { isLoading = false }
         do {
-            items = try await service.active()
+            items = Self.deduplicated(try await service.active())
         } catch let api as APIError {
             errorMessage = api.errorDescription
         } catch {
@@ -52,6 +52,18 @@ final class ActiveSubscriptionsViewModel: ObservableObject {
             items[idx] = sub
         } else {
             items.append(sub)
+        }
+        items = Self.deduplicated(items)
+    }
+
+    private static func deduplicated(_ subscriptions: [UserSubscriptionDTO]) -> [UserSubscriptionDTO] {
+        var seen = Set<String>()
+        return subscriptions.filter { sub in
+            guard sub.status == "active" else { return false }
+            let key = sub.subscriptionId
+            if seen.contains(key) { return false }
+            seen.insert(key)
+            return true
         }
     }
 }
