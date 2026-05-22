@@ -109,16 +109,8 @@ final class ChatDetailViewModel: ObservableObject {
                 case .done(let final):
                     let resolvedContent = final.content.isEmpty ? accumulatedContent : final.content
                     updateLastAssistant {
-                        $0 = MessageDTO(
-                            id: final.id,
-                            chatId: final.chatId,
-                            role: final.role,
-                            content: resolvedContent,
-                            status: .completed,
-                            tokenCount: final.tokenCount,
-                            attachments: final.attachments,
-                            createdAt: final.createdAt
-                        )
+                        $0.content = resolvedContent
+                        $0.status = .completed
                     }
                 case .quota(let q):
                     quota = q

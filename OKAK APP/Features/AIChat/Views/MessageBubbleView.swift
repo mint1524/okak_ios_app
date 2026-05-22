@@ -8,26 +8,7 @@ struct MessageBubbleView: View {
         HStack {
             if message.role == .user { Spacer(minLength: OKSpacing.xxl) }
             VStack(alignment: message.role == .user ? .trailing : .leading, spacing: OKSpacing.xs) {
-                Text(message.content)
-                    .font(OKFont.body)
-                    .foregroundStyle(textColor)
-                    .padding(.horizontal, OKSpacing.l)
-                    .padding(.vertical, OKSpacing.m)
-                    .background(
-                        RoundedRectangle(cornerRadius: OKRadius.l, style: .continuous)
-                            .fill(background)
-                    )
-                if message.status == .streaming {
-                    HStack(spacing: OKSpacing.xs) {
-                        ProgressView()
-                            .controlSize(.small)
-                            .tint(OKColor.textSecondary)
-                        Text("OKAK печатает...")
-                            .font(OKFont.caption)
-                            .foregroundStyle(OKColor.textSecondary)
-                    }
-                    .padding(.leading, OKSpacing.l)
-                }
+                bubbleBody
                 if !message.attachments.isEmpty {
                     HStack(spacing: OKSpacing.xs) {
                         ForEach(message.attachments) { att in
@@ -48,8 +29,32 @@ struct MessageBubbleView: View {
         .padding(.horizontal, OKSpacing.l)
     }
 
-    private var cursor: String {
-        "" 
+    private var bubbleBody: some View {
+        VStack(alignment: .leading, spacing: OKSpacing.s) {
+            if !message.content.isEmpty {
+                Text(.init(message.content))
+                    .font(OKFont.body)
+                    .foregroundStyle(textColor)
+            }
+            if message.status == .streaming {
+                HStack(spacing: OKSpacing.xs) {
+                    ProgressView()
+                        .controlSize(.mini)
+                        .tint(message.role == .user ? Color.white.opacity(0.7) : OKColor.textSecondary)
+                    if message.content.isEmpty {
+                        Text("OKAK печатает...")
+                            .font(OKFont.caption)
+                            .foregroundStyle(message.role == .user ? Color.white.opacity(0.7) : OKColor.textSecondary)
+                    }
+                }
+            }
+        }
+        .padding(.horizontal, OKSpacing.l)
+        .padding(.vertical, OKSpacing.m)
+        .background(
+            RoundedRectangle(cornerRadius: OKRadius.l, style: .continuous)
+                .fill(background)
+        )
     }
 
     private var background: Color {

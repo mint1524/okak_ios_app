@@ -79,6 +79,9 @@ struct ChatDetailView: View {
             .onChange(of: vm.messages.last?.content) { _, _ in
                 proxy.scrollTo("bottom", anchor: .bottom)
             }
+            .onChange(of: vm.messages.last?.status) { _, _ in
+                withAnimation { proxy.scrollTo("bottom", anchor: .bottom) }
+            }
         }
     }
 
