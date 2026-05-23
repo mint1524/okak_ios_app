@@ -14,7 +14,7 @@ struct ChatParametersView: View {
     init(chat: ChatDTO, onSave: @escaping (UpdateChatParametersRequest) -> Void) {
         self.chat = chat
         self.onSave = onSave
-        _model = State(initialValue: chat.model)
+        _model = State(initialValue: OKAKModel.normalize(chat.model))
         _reasoningLevel = State(initialValue: chat.reasoningLevel)
         _searchEnabled = State(initialValue: chat.searchEnabled)
         _streamingEnabled = State(initialValue: chat.streamingEnabled)
@@ -25,9 +25,9 @@ struct ChatParametersView: View {
             Form {
                 Section("Модель") {
                     Picker("Модель", selection: $model) {
-                        Text("OKAK Mini").tag("okak-mini")
-                        Text("OKAK Standard").tag("okak-standard")
-                        Text("OKAK Pro").tag("okak-pro")
+                        ForEach(OKAKModel.all, id: \.id) { m in
+                            Text(m.label).tag(m.id)
+                        }
                     }
                 }
                 Section("Reasoning") {

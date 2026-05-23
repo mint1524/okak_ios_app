@@ -86,7 +86,7 @@ struct ChatRowView: View {
                 .font(OKFont.bodyBold)
                 .lineLimit(1)
             HStack(spacing: OKSpacing.s) {
-                Text(chat.model)
+                Text(OKAKModel.label(for: chat.model))
                 Text("•")
                 Text(chat.updatedAt, style: .relative)
             }
@@ -94,6 +94,22 @@ struct ChatRowView: View {
             .foregroundStyle(OKColor.textSecondary)
         }
         .padding(.vertical, OKSpacing.xs)
+    }
+}
+
+enum OKAKModel {
+    static let all: [(id: String, label: String)] = [
+        ("okak-mini", "OKAK Mini"),
+        ("okak-standard", "OKAK Standard"),
+        ("okak-pro", "OKAK Pro")
+    ]
+
+    static func label(for id: String) -> String {
+        all.first { $0.id == id }?.label ?? "OKAK Standard"
+    }
+
+    static func normalize(_ id: String) -> String {
+        all.first { $0.id == id }?.id ?? "okak-standard"
     }
 }
 

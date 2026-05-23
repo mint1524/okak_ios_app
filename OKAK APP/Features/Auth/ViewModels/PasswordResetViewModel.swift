@@ -44,7 +44,7 @@ final class PasswordResetViewModel: ObservableObject {
             infoMessage = "Если адрес зарегистрирован, на него отправлен код."
         } catch let api as APIError {
             switch api {
-            case .forbidden:
+            case .forbidden(_):
                 errorMessage = "Доступ запрещён. Проверьте email или обратитесь в поддержку."
             case .server(let code, _) where code == 500:
                 infoMessage = "Если адрес зарегистрирован, код мог быть отправлен."
@@ -67,7 +67,7 @@ final class PasswordResetViewModel: ObservableObject {
             infoMessage = "Новый код отправлен."
         } catch let api as APIError {
             switch api {
-            case .forbidden:
+            case .forbidden(_):
                 errorMessage = "Доступ запрещён. Проверьте email или обратитесь в поддержку."
             case .server(let code, _) where code == 500:
                 infoMessage = "Новый код мог быть отправлен."
@@ -94,7 +94,7 @@ final class PasswordResetViewModel: ObservableObject {
             step = .done
         } catch let api as APIError {
             switch api {
-            case .forbidden:
+            case .forbidden(_):
                 errorMessage = "Код недействителен или истёк. Запросите новый."
             case .validation(let m):
                 errorMessage = m
