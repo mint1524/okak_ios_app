@@ -85,16 +85,31 @@ struct ChatRowView: View {
             Text(chat.title)
                 .font(OKFont.bodyBold)
                 .lineLimit(1)
-            HStack(spacing: OKSpacing.s) {
-                Text(OKAKModel.label(for: chat.model))
-                Text("•")
-                Text(chat.updatedAt, style: .relative)
+            TimelineView(.periodic(from: .now, by: 60)) { ctx in
+                HStack(spacing: OKSpacing.s) {
+                    Text(OKAKModel.label(for: chat.model))
+                    Text("•")
+                    Text(relativeMinutes(chat.updatedAt, now: ctx.date))
+                }
+                .font(OKFont.caption)
+                .foregroundStyle(OKColor.textSecondary)
             }
-            .font(OKFont.caption)
-            .foregroundStyle(OKColor.textSecondary)
         }
         .padding(.vertical, OKSpacing.xs)
     }
+}
+
+private func relativeMinutes(_ date: Date, now: Date) -> String {
+    let minutes = Int(now.timeIntervalSince(date) / 60)
+    if minutes < 1 { return "только что" }
+    if minutes < 60 { return "\(minutes) мин. назад" }
+    let hours = minutes / 60
+    if hours < 24 { return "\(hours) ч. назад" }
+    let formatter = DateFormatter()
+    formatter.locale = Locale(identifier: "ru_RU")
+    let days = hours / 24
+    formatter.dateFormat = days < 365 ? "d MMM" : "d MMM yyyy"
+    return formatter.string(from: date)
 }
 
 enum OKAKModel {
