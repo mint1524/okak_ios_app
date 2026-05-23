@@ -74,6 +74,9 @@ struct ChatDetailView: View {
                 .padding(.vertical, OKSpacing.s)
             }
             .background(OKColor.background)
+            .contentShape(Rectangle())
+            .simultaneousGesture(TapGesture().onEnded { inputFocused = false })
+            .scrollDismissesKeyboard(.interactively)
             .onChange(of: vm.messages.count) { _, _ in
                 withAnimation { proxy.scrollTo("bottom", anchor: .bottom) }
             }
