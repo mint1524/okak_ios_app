@@ -14,8 +14,9 @@ struct ChatParametersView: View {
     init(chat: ChatDTO, onSave: @escaping (UpdateChatParametersRequest) -> Void) {
         self.chat = chat
         self.onSave = onSave
-        _model = State(initialValue: OKAKModel.normalize(chat.model))
-        _reasoningLevel = State(initialValue: chat.reasoningLevel)
+        let normalizedModel = OKAKModel.normalize(chat.model)
+        _model = State(initialValue: normalizedModel)
+        _reasoningLevel = State(initialValue: OKAKModel.normalizeReasoning(chat.reasoningLevel, for: normalizedModel))
         _searchEnabled = State(initialValue: chat.searchEnabled)
         _streamingEnabled = State(initialValue: chat.streamingEnabled)
     }
@@ -32,16 +33,19 @@ struct ChatParametersView: View {
                 }
                 Section("Reasoning") {
                     Picker("Уровень", selection: $reasoningLevel) {
-                        Text("Low").tag("low")
-                        Text("Medium").tag("medium")
-                        Text("High").tag("high")
+                        ForEach(OKAKModel.reasoningLevels(for: model)) { level in
+                            Text(level.label).tag(level.id)
+                        }
                     }
-                    .pickerStyle(.segmented)
+                    .pickerStyle(.menu)
                 }
                 Section {
                     Toggle("Web search", isOn: $searchEnabled)
                     Toggle("Streaming", isOn: $streamingEnabled)
                 }
+            }
+            .onChange(of: model) { _, newModel in
+                reasoningLevel = OKAKModel.normalizeReasoning(reasoningLevel, for: newModel)
             }
             .navigationTitle("Параметры чата")
             .navigationBarTitleDisplayMode(.inline)

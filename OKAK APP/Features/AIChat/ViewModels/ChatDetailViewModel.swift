@@ -25,6 +25,17 @@ final class ChatDetailViewModel: ObservableObject {
         !draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !isSending
     }
 
+    func stopStreaming() {
+        streamingTask?.cancel()
+        streamingTask = nil
+        isSending = false
+        updateLastAssistant {
+            if $0.status == .streaming {
+                $0.status = $0.content.isEmpty ? .failed : .completed
+            }
+        }
+    }
+
     func load() async {
         isLoading = true
         defer { isLoading = false }
@@ -36,6 +47,10 @@ final class ChatDetailViewModel: ObservableObject {
     }
 
     func send() async {
+        if isSending {
+            stopStreaming()
+            return
+        }
         let text = draft.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty else { return }
         if let quota, quota.remaining <= 0 {
@@ -46,11 +61,15 @@ final class ChatDetailViewModel: ObservableObject {
         errorMessage = nil
         isSending = true
         if chat.streamingEnabled {
-            await streamReply(content: text)
+            streamingTask = Task { [weak self] in
+                await self?.streamReply(content: text)
+                self?.isSending = false
+            }
+            await streamingTask?.value
         } else {
             await sendNonStreaming(content: text)
+            isSending = false
         }
-        isSending = false
     }
 
     private func sendNonStreaming(content: String) async {
@@ -100,18 +119,21 @@ final class ChatDetailViewModel: ObservableObject {
         let stream = service.streamMessage(chatId: chat.id, content: content, attachments: attachments)
         do {
             for try await event in stream {
+                if Task.isCancelled { break }
                 switch event {
                 case .start: break
                 case .delta(let chunk):
                     accumulatedContent += chunk
                     updateLastAssistant { $0.content += chunk }
                 case .toolUse: break
-                case .done(let final):
-                    let resolvedContent = final.content.isEmpty ? accumulatedContent : final.content
-                    updateLastAssistant {
-                        $0.content = resolvedContent
-                        $0.status = .completed
-                    }
+                case .done(message: let final, userMessage: let finalUser):
+                    applyFinalStreamMessages(
+                        assistant: final,
+                        user: finalUser,
+                        fallbackContent: accumulatedContent,
+                        placeholderUserId: placeholderUserId,
+                        placeholderAssistantId: placeholderAssistantId
+                    )
                 case .quota(let q):
                     quota = q
                 case .error(let m):
@@ -129,12 +151,24 @@ final class ChatDetailViewModel: ObservableObject {
                 $0.status = .failed
             }
         } catch {
-            errorMessage = error.localizedDescription
-            updateLastAssistant {
-                $0.content = accumulatedContent
-                $0.status = .failed
+            if !Task.isCancelled {
+                errorMessage = error.localizedDescription
+                updateLastAssistant {
+                    $0.content = accumulatedContent
+                    $0.status = .failed
+                }
+            } else {
+                updateLastAssistant {
+                    $0.content = accumulatedContent
+                    $0.status = .completed
+                }
             }
         }
+        // Refresh from server to replace temp IDs with real server-assigned IDs
+        if let refreshed = try? await service.listMessages(chatId: chat.id) {
+            messages = refreshed
+        }
+        if let q = try? await service.currentQuota() { quota = q }
     }
 
     private func updateLastAssistant(_ mutate: (inout MessageDTO) -> Void) {
@@ -142,6 +176,31 @@ final class ChatDetailViewModel: ObservableObject {
         var m = messages[idx]
         mutate(&m)
         messages[idx] = m
+    }
+
+    private func applyFinalStreamMessages(
+        assistant: MessageDTO,
+        user: MessageDTO?,
+        fallbackContent: String,
+        placeholderUserId: String,
+        placeholderAssistantId: String
+    ) {
+        if let user,
+           let userIndex = messages.firstIndex(where: { $0.id == placeholderUserId }) {
+            messages[userIndex] = user
+        }
+
+        var finalAssistant = assistant
+        if finalAssistant.content.isEmpty && !fallbackContent.isEmpty {
+            finalAssistant.content = fallbackContent
+            finalAssistant.status = .completed
+        }
+
+        if let assistantIndex = messages.firstIndex(where: { $0.id == placeholderAssistantId || $0.id == assistant.id }) {
+            messages[assistantIndex] = finalAssistant
+        } else {
+            messages.append(finalAssistant)
+        }
     }
 
     private func handleStreamError(_ api: APIError) {

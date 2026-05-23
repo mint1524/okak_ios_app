@@ -151,12 +151,12 @@ enum ChatStreamEvent: Decodable, Sendable {
     case start(messageId: String)
     case delta(String)
     case toolUse(String)
-    case done(MessageDTO)
+    case done(message: MessageDTO, userMessage: MessageDTO?)
     case quota(QuotaDTO)
     case error(String)
 
     private enum Kind: String, Decodable { case start, delta, tool_use, done, quota, error }
-    private enum CodingKeys: String, CodingKey { case type, content, message, message_id, quota }
+    private enum CodingKeys: String, CodingKey { case type, content, message, message_id, user_message, quota }
 
     init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
@@ -170,7 +170,10 @@ enum ChatStreamEvent: Decodable, Sendable {
         case .tool_use:
             self = .toolUse(try c.decode(String.self, forKey: .content))
         case .done:
-            self = .done(try c.decode(MessageDTO.self, forKey: .message))
+            self = .done(
+                message: try c.decode(MessageDTO.self, forKey: .message),
+                userMessage: try c.decodeIfPresent(MessageDTO.self, forKey: .user_message)
+            )
         case .quota:
             self = .quota(try c.decode(QuotaDTO.self, forKey: .quota))
         case .error:

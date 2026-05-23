@@ -113,10 +113,42 @@ private func relativeMinutes(_ date: Date, now: Date) -> String {
 }
 
 enum OKAKModel {
-    static let all: [(id: String, label: String)] = [
-        ("okak-mini", "OKAK Mini"),
-        ("okak-standard", "OKAK Standard"),
-        ("okak-pro", "OKAK Pro")
+    struct Entry: Identifiable, Hashable {
+        let id: String
+        let label: String
+        let reasoningLevels: [ReasoningLevel]
+    }
+
+    struct ReasoningLevel: Identifiable, Hashable {
+        let id: String
+        let label: String
+    }
+
+    static let all: [Entry] = [
+        Entry(
+            id: "okak-mini",
+            label: "OKAK Mini",
+            reasoningLevels: [ReasoningLevel(id: "none", label: "Без reasoning")]
+        ),
+        Entry(
+            id: "okak-standard",
+            label: "OKAK Standard",
+            reasoningLevels: [
+                ReasoningLevel(id: "none", label: "Без reasoning"),
+                ReasoningLevel(id: "thinking", label: "Thinking")
+            ]
+        ),
+        Entry(
+            id: "okak-pro",
+            label: "OKAK Pro",
+            reasoningLevels: [
+                ReasoningLevel(id: "low", label: "Low"),
+                ReasoningLevel(id: "medium", label: "Medium"),
+                ReasoningLevel(id: "high", label: "High"),
+                ReasoningLevel(id: "medium-thinking", label: "Medium Thinking"),
+                ReasoningLevel(id: "high-thinking", label: "High Thinking")
+            ]
+        )
     ]
 
     static func label(for id: String) -> String {
@@ -125,6 +157,17 @@ enum OKAKModel {
 
     static func normalize(_ id: String) -> String {
         all.first { $0.id == id }?.id ?? "okak-standard"
+    }
+
+    static func reasoningLevels(for modelId: String) -> [ReasoningLevel] {
+        all.first { $0.id == normalize(modelId) }?.reasoningLevels ?? all[1].reasoningLevels
+    }
+
+    static func normalizeReasoning(_ id: String, for modelId: String) -> String {
+        let levels = reasoningLevels(for: modelId)
+        if levels.contains(where: { $0.id == id }) { return id }
+        if id == "medium", modelId == "okak-standard" { return "thinking" }
+        return levels.first?.id ?? "none"
     }
 }
 

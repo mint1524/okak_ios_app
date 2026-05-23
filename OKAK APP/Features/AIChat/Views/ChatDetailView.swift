@@ -105,9 +105,9 @@ struct ChatDetailView: View {
                     Image(systemName: vm.isSending ? "stop.circle.fill" : "arrow.up.circle.fill")
                         .resizable()
                         .frame(width: 36, height: 36)
-                        .foregroundStyle(vm.canSend ? OKColor.accent : OKColor.textTertiary)
+                        .foregroundStyle(vm.isSending || vm.canSend ? OKColor.accent : OKColor.textTertiary)
                 }
-                .disabled(!vm.canSend)
+                .disabled(!vm.canSend && !vm.isSending)
             }
             .padding(OKSpacing.s)
             .background(OKColor.background)

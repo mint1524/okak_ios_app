@@ -32,7 +32,7 @@ struct MessageBubbleView: View {
     private var bubbleBody: some View {
         VStack(alignment: .leading, spacing: OKSpacing.s) {
             if !message.content.isEmpty {
-                Text(.init(message.content))
+                Text(renderedContent)
                     .font(OKFont.body)
                     .foregroundStyle(textColor)
             }
@@ -67,5 +67,9 @@ struct MessageBubbleView: View {
 
     private var textColor: Color {
         message.role == .user ? .white : OKColor.textPrimary
+    }
+
+    private var renderedContent: AttributedString {
+        (try? AttributedString(markdown: message.content)) ?? AttributedString(message.content)
     }
 }
